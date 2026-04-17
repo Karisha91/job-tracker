@@ -4,7 +4,6 @@ export default function DeleteButton({ applicationId }: { applicationId: string 
     const router = useRouter();
 
     async function handleDelete() {
-        console.log("Delete button clicked for application ID:", applicationId);
         try {
             const response = await fetch(`/api/applications/${applicationId}`, {
                 method: "DELETE",
