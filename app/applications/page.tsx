@@ -1,11 +1,13 @@
 import AddApplicationForm from "./components/AddApplicationForm";
 import { auth } from "../../auth";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import DeleteButton from "./components/DeleteButton";
 
-const prisma = new PrismaClient();
 
-export default async function ApplicationPage() {
+
+export default async function ApplicationPage({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
+  const resolvedSearchParams = await searchParams;
+  const editId = resolvedSearchParams.edit;
   const session = await auth();
   const applications = await prisma.application.findMany({
     where: {
@@ -13,10 +15,16 @@ export default async function ApplicationPage() {
     },
   });
 
+  const applicationToEdit = editId ? await prisma.application.findUnique({
+    where: {
+      id: editId,
+    },
+  }) : null;
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-3xl font-bold mb-8 text-gray-500">Applications</h1>
-      <AddApplicationForm />
+      <AddApplicationForm application={applicationToEdit || undefined} /> 
       {applications.length > 0 ? (
         <div className="mt-8 space-y-4">
           {applications.map((app) => (
