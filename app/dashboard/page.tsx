@@ -2,7 +2,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import DeleteButton from "../applications/components/DeleteButton";
 import Link from "next/link";
-
+import StatusChart from "./components/StatusChart";
+import ApplicationsLineChart from "./components/ApplicationsLineChart";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -15,6 +16,22 @@ export default async function DashboardPage() {
       date_applied: "desc",
     },
   });
+
+  const grouped: Record<string, number> = {};
+  for (const app of applications) {
+        const date = new Date(app.date_applied).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        if (grouped[date]) {
+          grouped[date] = grouped[date] + 1;
+
+        } else {
+          grouped[date] = 1
+        }
+  }
+  const lineChartData = Object.entries(grouped).map(([date, count]) => ({
+    date,
+    count
+})).reverse();
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -44,6 +61,19 @@ export default async function DashboardPage() {
             {applications.filter((app) => app.status === "OFFER").length}
           </p>
         </div>
+      </div>
+      <div className="bg-white rounded-lg shadow p-6">
+        <StatusChart
+          applied={applications.length}
+          interview={
+            applications.filter((app) => app.status === "INTERVIEW").length
+          }
+          rejected={
+            applications.filter((app) => app.status === "REJECTED").length
+          }
+          offer={applications.filter((app) => app.status === "OFFER").length}
+        />
+        <ApplicationsLineChart data={lineChartData}/>
       </div>
       <div className="mt-8 bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-bold mb-4 text-gray-500">
@@ -85,7 +115,9 @@ export default async function DashboardPage() {
                         </button>
                       </Link>
                       <Link href={`/applications/${app.id}`}>
-                      <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Details</button>
+                        <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                          Details
+                        </button>
                       </Link>
                     </div>
                   </td>
