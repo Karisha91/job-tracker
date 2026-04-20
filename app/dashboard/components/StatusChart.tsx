@@ -9,6 +9,7 @@ type Props = {
 
 }
 
+
 export default function StatusChart({ applied, interview, rejected, offer }: Props) {
 
     const data = [
