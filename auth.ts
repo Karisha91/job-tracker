@@ -13,7 +13,7 @@ export const { handlers, signIn, signOut, auth} = NextAuth({
             password:{}
         },
         async authorize(credentials) {
-            console.log("Credentials received:", credentials);
+            
             const user = await prisma.user.findUnique({
                 where: {
                     email: credentials?.email as string
@@ -30,7 +30,7 @@ export const { handlers, signIn, signOut, auth} = NextAuth({
             if (!isPasswordValid) {
                 return null;
             }
-            console.log("User found:", user);
+            
             return user;
         }
     })
