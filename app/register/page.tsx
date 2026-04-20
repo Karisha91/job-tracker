@@ -6,6 +6,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,10 +25,14 @@ export default function RegisterPage() {
         return;
       }
       await signIn("credentials", {
-        redirect: false,
+        redirect: true,
         email,
         password,
+        callbackUrl: "/dashboard",
       });
+        setEmail("");
+        setPassword("");
+        
     } catch (error) {
       setError("An error occurred during registration");
     }
