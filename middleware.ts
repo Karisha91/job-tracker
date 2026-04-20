@@ -3,9 +3,8 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("authjs.session-token")?.value;
-  console.log("Token:", token);
-  console.log("Pathname:", request.nextUrl.pathname);
-  const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard");
+  const protectedRoutes = ["/dashboard", "/applications"]
+  const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
 
   if (isProtectedRoute && !token) {
     const loginUrl = new URL("/login", request.url);
@@ -15,5 +14,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard", "/dashboard/:path*"],
+  matcher: ["/dashboard", "/dashboard/:path*", "/applications", "/applications/:path*"],
 };

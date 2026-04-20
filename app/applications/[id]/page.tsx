@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import AddNoteForm from "./components/AddNoteForm";
+import DeleteNoteButton from "./components/DeleteNoteButton";
 
 export default async function ApplicationPage({
   params,
@@ -62,6 +63,8 @@ export default async function ApplicationPage({
                         <p className="text-xs text-gray-400 mt-2">{new Date(note.created_at).toLocaleDateString()}
 
                         </p>
+                        <DeleteNoteButton noteId={note.id}/> 
+
                 </div>
             ))}
 
