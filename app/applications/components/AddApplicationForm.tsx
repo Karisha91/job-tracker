@@ -21,6 +21,18 @@ user_id
 }
 }
 `
+const UPDATE_APPLICATION = gql `
+mutation UpdateApplication($id: ID!, $company_name: String!, $role: String!, $date_applied: String!, $status: Status!, $user_id: String!) {
+addApplication(id: $id ,company_name: $company_name, role: $role, date_applied: $date_applied, status: $status, user_id: $user_id ) {
+id
+company_name
+role
+date_applied
+status
+user_id
+}
+}
+`
 
 
 export default function AddApplicationForm({application}: Props) {
@@ -35,6 +47,7 @@ export default function AddApplicationForm({application}: Props) {
   const [error, setError] = useState({text: "", type: ""});
 
   const [addApplicationMutation, { loading, error: apolloError }] = useMutation(ADD_APPLICATION);
+  const [updateApplication] = useMutation(UPDATE_APPLICATION)
 
   async function handleSubmit() {
     if (application) {

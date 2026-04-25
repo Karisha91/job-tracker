@@ -33,6 +33,6 @@ export const typeDefs = `
     type Mutation {
         addApplication(company_name: String!, role: String!, date_applied: String!, status: Status!, user_id: String!): Application!
         deleteApplication(id: ID!): Application!
-        updateApplication(id: ID!, status: Status!): Application!
+        updateApplication(id: ID!,company_name: String!, role: String!, date_applied: String!, status: Status!, user_id: String!): Application!
     }
 `
