@@ -1,19 +1,30 @@
 'use client';
 import { useRouter } from "next/navigation";
+import { gql, useQuery, useMutation } from "@apollo/client";
+
+const DELETE_APPLICATION = gql `
+mutation DeleteApplication($id: ID!) {
+deleteApplication(id: $id) {
+id
+company_name
+role
+date_applied
+status
+user_id
+}
+}
+`
 export default function DeleteButton({ applicationId }: { applicationId: string }) {
+
+
+    const [deleteApplication] = useMutation(DELETE_APPLICATION);
+
     const router = useRouter();
 
     async function handleDelete() {
         try {
-            const response = await fetch(`/api/applications/${applicationId}`, {
-                method: "DELETE",
-            });
-            if (response.ok) {
-                console.log("Application deleted successfully");
-                router.refresh();
-            } else {
-                console.error("Failed to delete application");
-            }
+            await deleteApplication({variables: {id: applicationId}})
+            router.refresh();
         } catch (error) {
             console.error("Error deleting application:", error);
         }

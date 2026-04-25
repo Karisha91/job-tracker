@@ -18,6 +18,12 @@ export const resolvers = {
                 status: args.status,
                 user_id: args.user_id
             }
+        
+        }),
+        deleteApplication: async (_, args) => await prisma.application.delete({
+            where: {
+                id: args.id
+            }
         })
     }
 }
