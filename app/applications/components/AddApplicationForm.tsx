@@ -2,15 +2,31 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Application } from "@prisma/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
+import { useSession } from "next-auth/react";
 
 type Props = {
   application?: Application;
 }
 
+const ADD_APPLICATION = gql `
+mutation AddApplication($company_name: String!, $role: String!, $date_applied: String!, $status: Status!, $user_id: String!) {
+addApplication(company_name: $company_name, role: $role, date_applied: $date_applied, status: $status, user_id: $user_id ) {
+id
+company_name
+role
+date_applied
+status
+user_id
+}
+}
+`
+
 
 export default function AddApplicationForm({application}: Props) {
 
   const router = useRouter();
+  const {data: session} = useSession();
   
   const [company, setCompany] = useState(application ? application.company_name : "");
   const [role, setRole] = useState(application ? application.role : "");
@@ -18,7 +34,7 @@ export default function AddApplicationForm({application}: Props) {
   const [dateApplied, setDateApplied] = useState(application ? application.date_applied.toISOString().split('T')[0] : "");
   const [error, setError] = useState({text: "", type: ""});
 
-
+  const [addApplicationMutation, { loading, error: apolloError }] = useMutation(ADD_APPLICATION);
 
   async function handleSubmit() {
     if (application) {
@@ -43,19 +59,15 @@ export default function AddApplicationForm({application}: Props) {
       }
       setTimeout(() => setError({text: "", type: ""}), 3000);
     } else {
-      const response = await fetch("/api/applications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company,
-          role,
-          status,
-          dateApplied,
-        }),
+      try {
+        await addApplicationMutation({
+          variables: {
+        company_name: company, 
+        role,date_applied: dateApplied, 
+        status, 
+        user_id: session?.user?.id }
       });
-      if (response.ok) {
+    
         setCompany("");
         setRole("");
         setStatus("APPLIED");
@@ -63,7 +75,7 @@ export default function AddApplicationForm({application}: Props) {
         setError({text: "Application added successfully!", type: "success"});
         router.refresh();
         router.push("/dashboard"); 
-      } else {
+      } catch {
         setError({text: "Failed to add application", type: "error"});
       }
       setTimeout(() => setError({text: "", type: ""}), 3000);

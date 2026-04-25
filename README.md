@@ -1,6 +1,6 @@
 Job Application Tracker
 A full-stack job application tracking app built with Next.js 15, TypeScript, and Prisma. Track your applications, monitor progress through the hiring pipeline, add notes per application, and visualize your job search data with interactive charts.
-🔗 Live Demo: [your-vercel-url-here]
+🔗 Live Demo: https://job-tracker-ecru-beta.vercel.app
 Test credentials:
 
 Email: test@gmail.com
