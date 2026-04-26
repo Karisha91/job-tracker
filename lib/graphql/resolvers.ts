@@ -36,6 +36,17 @@ export const resolvers = {
                 status: args.status,
                 user_id: args.user_id
             }
+        }),
+        addNote: async (_, args) => await prisma.note.create({
+            data: {
+                content: args.content,
+                application_id: args.application_id
+            }
+        }),
+        deleteNote: async (_, args) => await prisma.note.delete({
+            where: {
+                id: args.id
+            }
         })
     }
 }

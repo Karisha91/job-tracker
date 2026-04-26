@@ -1,19 +1,32 @@
 'use client';
 import { useRouter } from "next/navigation";
+import { gql, useQuery, useMutation } from "@apollo/client";
+
+
+const DELETE_NOTE = gql `
+mutation DeleteNote($id: ID!) {
+deleteNote(id: $id) {
+id
+content
+created_at
+application_id
+}
+}
+`
 export default function DeleteNoteButton({ noteId }: { noteId: string }) {
+
+    const [deleteNote] = useMutation(DELETE_NOTE)
+
     const router = useRouter();
 
     async function handleDelete() {
         try {
-            const response = await fetch(`/api/notes/${noteId}`, {
-                method: "DELETE",
-            });
-            if (response.ok) {
-                console.log("Note deleted successfully");
-                router.refresh();
-            } else {
-                console.error("Failed to delete note");
-            }
+            await deleteNote({
+                variables: {
+                    id: noteId
+                }
+            })
+            router.refresh()
         } catch (error) {
             console.error("Error deleting note:", error);
         }

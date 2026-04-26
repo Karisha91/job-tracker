@@ -34,5 +34,7 @@ export const typeDefs = `
         addApplication(company_name: String!, role: String!, date_applied: String!, status: Status!, user_id: String!): Application!
         deleteApplication(id: ID!): Application!
         updateApplication(id: ID!,company_name: String!, role: String!, date_applied: String!, status: Status!, user_id: String!): Application!
+        addNote(content: String!, application_id: String!): Note!
+        deleteNote(id: ID!): Note!
     }
 `

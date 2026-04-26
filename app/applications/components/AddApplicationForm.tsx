@@ -23,7 +23,7 @@ user_id
 `
 const UPDATE_APPLICATION = gql `
 mutation UpdateApplication($id: ID!, $company_name: String!, $role: String!, $date_applied: String!, $status: Status!, $user_id: String!) {
-addApplication(id: $id ,company_name: $company_name, role: $role, date_applied: $date_applied, status: $status, user_id: $user_id ) {
+updateApplication(id: $id ,company_name: $company_name, role: $role, date_applied: $date_applied, status: $status, user_id: $user_id ) {
 id
 company_name
 role
@@ -50,24 +50,20 @@ export default function AddApplicationForm({application}: Props) {
   const [updateApplication] = useMutation(UPDATE_APPLICATION)
 
   async function handleSubmit() {
-    if (application) {
-      const response = await fetch(`/api/applications/${application.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company,
-          role,
-          status,
-          dateApplied,
-        }),
-      });
-      if (response.ok) {
+    if(application) {
+    try {
+       await updateApplication({
+        variables: {
+        id: application?.id,
+        company_name: company, 
+        role,date_applied: dateApplied, 
+        status, 
+        user_id: session?.user?.id
+       }})
         setError({text: "Application updated successfully!", type: "success"});
         router.refresh();
         router.push("/dashboard");
-      } else {
+      } catch {
         setError({text: "Failed to update application", type: "error"});
       }
       setTimeout(() => setError({text: "", type: ""}), 3000);
@@ -79,8 +75,7 @@ export default function AddApplicationForm({application}: Props) {
         role,date_applied: dateApplied, 
         status, 
         user_id: session?.user?.id }
-      });
-    
+      })
         setCompany("");
         setRole("");
         setStatus("APPLIED");
