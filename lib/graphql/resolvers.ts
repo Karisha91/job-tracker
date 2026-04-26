@@ -2,7 +2,11 @@ import { prisma } from "@/lib/prisma";
 
 export const resolvers = {
     Query: {
-        applications: async () => await prisma.application.findMany(),
+        applications: async (_, args, context) => await prisma.application.findMany({
+            where: {
+                user_id: context.session.user.id
+            }
+       } ),
         application: async (_, args) => await prisma.application.findUnique({
             where: {
                 id: args.id
