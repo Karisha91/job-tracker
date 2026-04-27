@@ -2,19 +2,20 @@ import { prisma } from "@/lib/prisma";
 
 export const resolvers = {
     Query: {
-        applications: async (_, args, context) => await prisma.application.findMany({
+        applications: async (_: unknown, args: any, context: any) => await prisma.application.findMany({
             where: {
                 user_id: context.session.user.id
             }
        } ),
-        application: async (_, args) => await prisma.application.findUnique({
+        application: async (_: unknown, args: any, context: any) => await prisma.application.findUnique({
             where: {
-                id: args.id
+                id: args.id,
+                user_id: context.session.user.id
             }
         })
     },
     Mutation: {
-        addApplication: async (_, args) => await prisma.application.create({
+        addApplication: async (_: unknown, args: any) => await prisma.application.create({
             data: {
                 company_name: args.company_name,
                 role: args.role,
@@ -24,12 +25,12 @@ export const resolvers = {
             }
         
         }),
-        deleteApplication: async (_, args) => await prisma.application.delete({
+        deleteApplication: async (_: unknown, args: any) => await prisma.application.delete({
             where: {
                 id: args.id
             }
         }),
-        updateApplication: async (_, args) => await prisma.application.update({
+        updateApplication: async (_: unknown, args: any) => await prisma.application.update({
             where: {
                 id: args.id
             },
@@ -41,13 +42,22 @@ export const resolvers = {
                 user_id: args.user_id
             }
         }),
-        addNote: async (_, args) => await prisma.note.create({
-            data: {
-                content: args.content,
-                application_id: args.application_id
-            }
-        }),
-        deleteNote: async (_, args) => await prisma.note.delete({
+        addNote: async (_: unknown, args: any, context: any) => {
+            const application = await prisma.application.findUnique({
+        where: { id: args.application_id }
+    });
+    if (application?.user_id !== context.session.user.id) {
+        throw new Error ("Unauthorized")
+    }
+    const note = await prisma.note.create({
+        data: {
+            content: args.content,
+            application_id: args.application_id
+        }
+    })
+    return note
+        },
+        deleteNote: async (_: unknown, args: any) => await prisma.note.delete({
             where: {
                 id: args.id
             }
