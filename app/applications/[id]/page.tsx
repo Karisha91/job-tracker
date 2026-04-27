@@ -2,12 +2,21 @@ import { prisma } from "@/lib/prisma";
 import AddNoteForm from "./components/AddNoteForm";
 import DeleteNoteButton from "./components/DeleteNoteButton";
 
+
+
+
+
 export default async function ApplicationPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+
+  
+
+
   const applicationId = (await params).id;
+  
   const application = await prisma.application.findUnique({
     where: {
       id: applicationId,

@@ -1,6 +1,19 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation";
+import { gql, useQuery, useMutation } from "@apollo/client";
+
+
+const ADD_NOTE = gql `
+mutation AddNote($content: String!, $application_id: String!) {
+addNote(content: $content, application_id: $application_id) {
+id
+content
+created_at
+application_id
+}
+}
+`
 
 type Props = {
     application_id : string
@@ -11,21 +24,23 @@ export default function AddNoteForm({application_id}: Props) {
 
     const [content, setContent] = useState("")
 
+    const [addNote , {loading, error}] = useMutation(ADD_NOTE)
+
     async function handleSubmit() {
-        const response = await fetch(`/api/notes`,{
-            method: "POST",
-            headers: {
-                "Content-Type" : "application/json",
-            },
-            body: JSON.stringify({
-                content,
-                application_id
+        try {
+            await addNote({
+                variables: {
+                    content: content,
+                    application_id: application_id
+                }
             })
-        })
-        if (response.ok) {
-    router.refresh();
-    setContent("");
-}
+            router.refresh();
+            setContent("");
+        } catch(e) {
+            console.error("Failed to add note", e)
+        }
+    
+
     }
 
     return (
