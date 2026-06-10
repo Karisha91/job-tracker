@@ -2,18 +2,21 @@ import { prisma } from "@/lib/prisma";
 
 export const resolvers = {
     Query: {
-        applications: async (_: unknown, args: any, context: any) => await prisma.application.findMany({
-            where: {
-                user_id: context.session.user.id
-            }
-       } ),
-        application: async (_: unknown, args: any, context: any) => await prisma.application.findUnique({
-            where: {
-                id: args.id,
-                user_id: context.session.user.id
-            }
-        })
-    },
+        applications: async (_: unknown, args: any, context: any) => {
+    if (!context.session?.user?.id) throw new Error("Unauthorized");
+    return await prisma.application.findMany({
+        where: { user_id: context.session.user.id }
+    });
+},
+        application: async (_: unknown, args: any, context: any) => {
+    if (!context.session?.user?.id) throw new Error("Unauthorized");
+    return await prisma.application.findUnique({
+        where: {
+            id: args.id,
+            user_id: context.session.user.id
+        }
+    });
+},
     Mutation: {
         addApplication: async (_: unknown, args: any) => await prisma.application.create({
             data: {
