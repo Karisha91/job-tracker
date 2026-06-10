@@ -16,5 +16,10 @@ const yoga = createYoga({
     }
 });
 
-export const GET = yoga;
-export const POST = yoga;
+export async function GET(request: Request) {
+    return yoga.fetch(request);
+}
+
+export async function POST(request: Request) {
+    return yoga.fetch(request);
+}
