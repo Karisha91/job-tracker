@@ -17,9 +17,11 @@ const yoga = createYoga({
 });
 
 export async function GET(request: Request) {
-    return yoga.fetch(request);
+    const response = await yoga.fetch(request);
+    return new Response(response.body, response);
 }
 
 export async function POST(request: Request) {
-    return yoga.fetch(request);
+    const response = await yoga.fetch(request);
+    return new Response(response.body, response);
 }
